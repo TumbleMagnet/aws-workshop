@@ -2,6 +2,7 @@ package be.trouget.awsworkshop.s3;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListBucketsRequest;
@@ -17,7 +18,7 @@ public class S3ListBuckets {
 
         LOG.info("Using region "+ region);
 
-        S3Client s3 = S3Client.builder().region(region).build();
+        S3Client s3 = S3Client.builder().credentialsProvider(ProfileCredentialsProvider.create()).region(region).build();
 
         LOG.info("S3 client ready...");
 
@@ -26,6 +27,6 @@ public class S3ListBuckets {
         ListBucketsResponse listBucketsResponse = s3.listBuckets(listBucketsRequest);
 
         LOG.info("Got response...");
-        listBucketsResponse.buckets().stream().forEach(x -> System.out.println(x.name()));
+        listBucketsResponse.buckets().forEach(x -> System.out.println(x.name()));
     }
 }
