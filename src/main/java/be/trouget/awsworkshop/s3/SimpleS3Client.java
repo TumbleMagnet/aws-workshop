@@ -16,28 +16,33 @@ import javax.ws.rs.client.ClientBuilder;
 
 public class SimpleS3Client {
 
-
-
     public static void main(String[] args) {
 
+        Client client = createClient();
+
+        String hostUrl = "https://track.bpost.cloud";
+        String path = "btr/web/#/home";
+        String responseEntity = client
+                .target(hostUrl)
+                .path(path)
+//                .queryParam("lang", "fr")
+                .request().get(String.class);
+
+        System.out.println(responseEntity);
+    }
+
+    private static Client createClient() {
+
+        ClientConfig cc = new ClientConfig();
+
+        cc.property(ClientProperties.PROXY_URI, "http://proxy.post.bpgnet.net:8080");
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
         credsProvider.setCredentials(
                 new AuthScope(AuthScope.ANY),
                 new NTCredentials("SPC-00479", "6GK3lIm4", null, null));
-
-        ClientConfig cc = new ClientConfig();
-        cc.property(ClientProperties.PROXY_URI, "http://proxy.post.bpgnet.net:8080");
         cc.property(ApacheClientProperties.CREDENTIALS_PROVIDER, credsProvider);
         cc.connectorProvider(new ApacheConnectorProvider());
 
-        Client client = ClientBuilder.newBuilder().newClient(cc);
-
-        String responseEntity = client
-                .target("https://track.bpost.cloud")
-                .path("btr/web/#/home")
-                .queryParam("lang", "fr")
-                .request().get(String.class);
-
-        System.out.println(responseEntity);
+        return ClientBuilder.newBuilder().newClient(cc);
     }
 }
